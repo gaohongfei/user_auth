@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>系统日志</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h2>系统日志</h2>
+            <a href="/admin/system" class="btn">返回</a>
+        </div>
+
+        <div class="log-container">
+            <pre th:each="log : ${logs}" th:text="${log}" class="log-entry"></pre>
+        </div>
+    </div>
+</body>
+</html> 

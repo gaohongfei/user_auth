@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>用户管理</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="/" class="logo">系统首页</a>
+            </div>
+            <div class="nav-right">
+                <span sec:authorize="isAuthenticated()">
+                    欢迎, <span sec:authentication="name"></span>
+                </span>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit">退出</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="admin-header">
+                <h2>用户管理</h2>
+                <a href="/admin/users/add" class="btn btn-primary">添加用户</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.id}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td>
+                                <span th:each="role : ${user.roles}" 
+                                      th:text="${role.name}" 
+                                      class="role-tag">
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" 
+                                   class="btn btn-small">编辑</a>
+                                <a th:href="@{/admin/users/{id}/roles(id=${user.id})}"
+                                   class="btn btn-small btn-info">角色</a>
+                                <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" 
+                                      method="post" 
+                                      style="display: inline;"
+                                      onsubmit="return confirm('确定要删除这个用户吗？');">
+                                    <button type="submit" class="btn btn-small btn-danger">删除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

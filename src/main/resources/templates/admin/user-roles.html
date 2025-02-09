@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>管理用户角色</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="/" class="logo">系统首页</a>
+            </div>
+            <div class="nav-right">
+                <span sec:authorize="isAuthenticated()">
+                    欢迎, <span sec:authentication="name"></span>
+                </span>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit">退出</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="user-roles-container">
+                <div class="admin-header">
+                    <h2>管理用户角色</h2>
+                    <a href="/admin/users" class="btn">返回用户列表</a>
+                </div>
+
+                <div class="user-info">
+                    <p><strong>用户名:</strong> <span th:text="${user.username}"></span></p>
+                    <p><strong>邮箱:</strong> <span th:text="${user.email}"></span></p>
+                </div>
+
+                <form th:action="@{/admin/users/{id}/roles(id=${user.id})}" method="post" class="form">
+                    <div class="roles-grid">
+                        <div th:each="role : ${allRoles}" class="role-item">
+                            <input type="checkbox" 
+                                   th:id="${'role-' + role.id}"
+                                   name="roleIds"
+                                   th:value="${role.id}"
+                                   th:checked="${user.roles.contains(role)}">
+                            <label th:for="${'role-' + role.id}">
+                                <span th:text="${role.name}" class="role-name"></span>
+                                <small th:text="${role.description}" class="role-description"></small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存角色设置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

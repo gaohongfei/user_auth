@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Role Management</title>
+</head>
+<body>
+    <h2>Role Management</h2>
+    <a th:href="@{/admin/roles/create}">Create New Role</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="role : ${roles}">
+                <td th:text="${role.id}"></td>
+                <td th:text="${role.name}"></td>
+                <td th:text="${role.description}"></td>
+                <td>
+                    <a th:href="@{/admin/roles/edit/{id}(id=${role.id})}">Edit</a>
+                    <form th:action="@{/admin/roles/delete/{id}(id=${role.id})}" method="post" style="display: inline;">
+                        <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html> 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>首页</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="/" class="logo">系统首页</a>
+            </div>
+            <div class="nav-right">
+                <span sec:authorize="isAuthenticated()">
+                    欢迎, <span sec:authentication="name"></span>
+                    <span sec:authentication="principal.authorities"></span>
+                </span>
+                <a sec:authorize="!isAuthenticated()" href="/login">登录</a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit">退出</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- 普通用户可见内容 -->
+            <div sec:authorize="hasRole('USER')">
+                <h2>用户功能</h2>
+                <ul>
+                    <li><a href="/user/profile">个人信息</a></li>
+                    <li><a href="/user/profile/change-password">修改密码</a></li>
+                </ul>
+            </div>
+
+            <!-- 管理员可见内容 -->
+            <div sec:authorize="hasRole('ADMIN')">
+                <h2>管理功能</h2>
+                <ul>
+                    <li><a href="/admin/users">用户管理</a></li>
+                    <li><a href="/admin/roles">角色管理</a></li>
+                    <li><a href="/admin/system">系统设置</a></li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </footer>
+</body>
+</html> 

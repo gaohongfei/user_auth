@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>编辑角色</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="container">
+        <h2>编辑角色</h2>
+        <form th:action="@{/admin/roles/update}" method="post" class="form">
+            <input type="hidden" name="id" th:value="${role.id}">
+            
+            <div class="form-group">
+                <label for="name">角色名称:</label>
+                <input type="text" id="name" name="name" th:value="${role.name}" required>
+                <small>请使用格式: ROLE_XXX</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">描述:</label>
+                <textarea id="description" name="description" rows="3" th:text="${role.description}"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="/admin/roles" class="btn">返回</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html> 

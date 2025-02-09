@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>系统管理</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="/" class="logo">系统首页</a>
+            </div>
+            <div class="nav-right">
+                <span sec:authorize="isAuthenticated()">
+                    欢迎, <span sec:authentication="name"></span>
+                </span>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit">退出</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="admin-header">
+                <h2>系统管理</h2>
+                <div>
+                    <a href="/admin/system/logs" class="btn">查看日志</a>
+                    <form th:action="@{/admin/system/cache/clear}" method="post" style="display: inline;">
+                        <button type="submit" class="btn">清理缓存</button>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <div class="system-info">
+                <h3>系统信息</h3>
+                <div class="info-grid">
+                    <div th:each="info : ${systemInfo}">
+                        <span class="info-label" th:text="${info.key}"></span>
+                        <span class="info-value" th:text="${info.value}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="system-settings">
+                <h3>系统设置</h3>
+                <form th:action="@{/admin/system/settings/update}" method="post">
+                    <div class="settings-grid">
+                        <div th:each="setting : ${settings}" class="form-group">
+                            <label th:for="${setting.key}" th:text="${setting.key}"></label>
+                            <input type="text" 
+                                   th:id="${setting.key}"
+                                   th:name="${setting.key}"
+                                   th:value="${setting.value}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">保存设置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 
