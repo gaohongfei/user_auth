@@ -152,4 +152,36 @@ footer {
     background: #e6ffe6;
     color: #006600;
     border: 1px solid #ccffcc;
+}
+
+/* 在现有样式后添加 */
+.alert-info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.form-links {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.form-links .btn {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #0066cc;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
 } 

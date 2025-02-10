@@ -1,15 +1,22 @@
 package com.example.security.controller;
 
-import com.example.security.entity.User;
-import com.example.security.entity.Role;
-import com.example.security.service.UserService;
-import com.example.security.service.RoleService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.security.entity.Role;
+import com.example.security.entity.User;
+import com.example.security.service.RoleService;
+import com.example.security.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
@@ -141,7 +148,8 @@ public class AdminController {
                                 RedirectAttributes redirectAttributes) {
         try {
             userService.updateUserRoles(id, roleIds != null ? roleIds : new ArrayList<>());
-            redirectAttributes.addFlashAttribute("success", "用户角色更新成功");
+            redirectAttributes.addFlashAttribute("success", 
+                "用户角色更新成功。如果角色发生变化，用户需要重新登录才能生效。");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "更新失败: " + e.getMessage());
         }

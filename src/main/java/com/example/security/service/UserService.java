@@ -1,23 +1,26 @@
 package com.example.security.service;
 
-import com.example.security.entity.User;
-import com.example.security.entity.Role;
-import com.example.security.repository.UserRepository;
-import com.example.security.repository.RoleRepository;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.Set;
-import java.util.List;
+import com.example.security.entity.Role;
+import com.example.security.entity.User;
+import com.example.security.repository.RoleRepository;
+import com.example.security.repository.UserRepository;
 
 @Service
 @Transactional
@@ -27,16 +30,19 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final RoleService roleService;
+    private final SessionRegistry sessionRegistry;
 
     @Autowired
     public UserService(UserRepository userRepository, 
                       PasswordEncoder passwordEncoder,
                       RoleRepository roleRepository,
-                      RoleService roleService) {
+                      RoleService roleService,
+                      SessionRegistry sessionRegistry) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.roleService = roleService;
+        this.sessionRegistry = sessionRegistry;
     }
 
     @Transactional
@@ -136,6 +142,7 @@ public class UserService implements UserDetailsService {
 
     public void updateUserRoles(Long userId, List<Long> roleIds) {
         User user = findById(userId);
+        Set<Role> oldRoles = new HashSet<>(user.getRoles());
         Set<Role> newRoles = roleIds.stream()
             .map(roleId -> roleService.findById(roleId))
             .collect(Collectors.toSet());
@@ -147,5 +154,28 @@ public class UserService implements UserDetailsService {
         
         user.setRoles(newRoles);
         userRepository.save(user);
+
+        // 检查角色是否发生变化
+        if (!oldRoles.equals(newRoles)) {
+            // 使相关用户的会话失效
+            expireUserSessions(user.getUsername());
+        }
+    }
+
+    private void expireUserSessions(String username) {
+        // 获取所有会话
+        List<Object> principals = sessionRegistry.getAllPrincipals();
+        
+        for (Object principal : principals) {
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                if (userDetails.getUsername().equals(username)) {
+                    // 使该用户的所有会话失效
+                    for (SessionInformation info : sessionRegistry.getAllSessions(principal, false)) {
+                        info.expireNow();
+                    }
+                }
+            }
+        }
     }
 } 
